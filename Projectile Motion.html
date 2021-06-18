@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title> Projectile Motion </title>
+    <style>
+/* Mona Ahmed Elabyad*/
+    body{
+      background-image: linear-gradient(white,#3D7EAA);
+      background-size: cover;
+      background-attachment: fixed;
+      text-align: center;
+      }
+      /* style for setting and canvas divs*/
+    #outer{
+      display: inline-flex;
+      margin: 0.25%;
+      text-align: center;
+      justify-content: center;
+      }
+      /*canvas style*/
+    canvas{
+      border:1px solid #d3d3d3;
+      box-shadow: 1px 1px 30px #d3d3d3;
+      }
+      /*style for header1*/
+    h1{
+      margin-top: 1%;
+      margin-bottom: 1%;
+      text-align: center;
+      font: italic small-caps bold 2.5em cursive;
+      }
+      /*style for user inputs*/
+    input{
+      border:1.5px solid #00416A;
+      border-radius: 4px;
+      box-shadow: 1px 1px 30px #d3d3d3;
+      width: 50%;
+      text-align: center;
+      margin: 0.5%;
+      font-size: 1.5em;
+      padding: 1%;
+      }
+      /*paragarphs styling*/
+    p{
+      font-size: 1.5em;
+      padding: 0.5%;
+      margin: 3%;
+      color: #870000;
+      }
+      /*style for time label*/
+    #seconds{
+      margin: 0.5% 20%;
+      font-size: 1.5em;
+      display: flex;
+      justify-content: center;
+      border:1px solid #d3d3d3;
+      padding: 1%;
+      }
+      /*x-y directions labels*/
+    #x-dir{
+      margin: 0.5% 20%;
+      font-size: 1.5em;
+      display: flex;
+      justify-content: center;
+      border:1px solid #d3d3d3;
+      padding: 1%;
+      overflow-x:hidden;
+      }
+      #y-dir{
+        margin: 0.5% 20%;
+        font-size: 1.5em;
+        display: flex;
+        justify-content: center;
+        border:1px solid #d3d3d3;
+        padding: 1%;
+        overflow-x:hidden;
+        }
+      /*style for launch and reset buttons*/
+    button{
+      background-color: #4CAF50; /*this color for launch button*/
+      border: none;
+      color: white;
+      padding: 10px 10px;
+      text-align: center;
+      font: italic small-caps bold 1.2em cursive;
+      margin: 4%;
+      }
+      /*style when hover*/
+    button:hover{
+      box-shadow: 1px 1px 10px #a8e063;
+      }
+      /*reset background color*/
+    #reset{
+      background-color: #00416A;
+      }
+      /*launch background color when hover*/
+    #launch:hover{
+      background-color: #0f9b0f;
+      }
+      /*reset background color when hover*/
+    #reset:hover{
+      background-color: #283c86;
+      }
+      /*style for setting part*/
+    #setting{
+      box-shadow: 1px 1px 30px #d3d3d3;
+      text-align: center;
+      width: 20%;
+      height: 500px;
+      background-color: white;
+      font: italic small-caps bold 0.7em cursive;
+      overflow-y: scroll;
+      border:1px solid #d3d3d3;
+      }
+
+
+    </style>
+  </head>
+
+  <body>
+    <!-- Mona Ahmed Elabyd -->
+
+    <h1> Projectile Motion </h1>
+    <div id="outer">
+      <div id="setting">
+        <!--Initial velocity -->
+        <div class="inputs">
+          <p> Initial Value </p>
+          <input type = "text" id = "initVel" name = "initVel"  value = "" />
+        </div>
+        <!--Projectile Angle -->
+        <div class="inputs">
+          <p> Projectile Angle </p>
+          <input type = "text" id = "angle" name = "angle" value = ""/>
+        </div>
+        <!--launch button -->
+        <div>
+          <button type="button" id="launch" name="button" onclick ="launch()"> Launch </button>
+        </div>
+        <!--time in seconds-->
+        <p style="color: #94716B"> Time in sec.</p>
+        <label id = "seconds">00</label>
+        <!-- x-direction label -->
+        <p style="color: #182848"> x - Displacement in m </p>
+        <label id = "x-dir"> 0 </label>
+        <!-- y-direction label -->
+        <p style="color: #182848"> y - Displacement in m </p>
+        <label id = "y-dir"> 0 </label>
+        <!--reset button -->
+        <div>
+          <button type="button" id="reset" name="button" onclick ="reset()"> reset </button>
+        </div>
+
+    </div>
+    <!--Canvas -->
+    <div id="container">
+      <canvas id="myCanvas" width= "800px" height= "500px"></canvas>
+    </div>
+
+  </div>
+
+  <script>
+    var x,y,endTime;
+    var totalSeconds = 0;
+    var secondsLabel = document.getElementById("seconds");
+    var xDir = document.getElementById("x-dir");
+    var yDir = document.getElementById("y-dir");
+    var xarray = new Array();
+    var yarray = new Array();
+    var r;
+    //when the user pressed launch button
+    function launch(){
+    totalSeconds=0;
+    //angle
+    var alpha = document.getElementById('angle').value;
+    //Initial velocity
+    var vel = document.getElementById('initVel').value;
+    var num = /^[0-9]+$/;
+    //check the user enter a velocity
+    if (vel === ""){
+      alert("please enter Initial velocity");
+      return totalSeconds=0;
+    }
+    //check the velocity is positive number
+    if (!(vel.match(num))){
+      alert("please enter a positve number");
+      return totalSeconds=0;
+    }
+    //check the user enter an angel
+    if (alpha === "" ){
+      alert("please enter Projectile angle");
+      return totalSeconds=0;
+    }
+    //check the angel withen 0 to 90
+    if (alpha > 90 || alpha < 0 ){
+      alert("please enter Projectile angle withen range (0 to 90)");
+      return totalSeconds=0;
+    }
+
+    //gravity
+    var g = 9.8;
+    //horizontal velocity
+    var vx = vel * Math.cos(alpha * Math.PI/180);
+    //vertical velocity
+    var vy;
+    //total velocity
+    var v = Math.sqrt((vx**2) + (vy**2));
+    //threshold time when vy==0
+    var th = ((vx * Math.sin(alpha*Math.PI/180))/g);
+    //calculating x and y Displacement and draw the path
+    var timer = setInterval(setTime, 10);
+    function setTime() {
+      ++totalSeconds;
+      vy = (vel * Math.sin(alpha * Math.PI/180) - g * totalSeconds/10);
+      //x-direction
+      x =  (vel * Math.cos(alpha*Math.PI/180)*totalSeconds/10);
+      //return the value of x to user
+      xDir.innerHTML = x.toFixed(2);
+      xarray.push(x)
+      //return the value of y to user
+      y = x * Math.tan(alpha*Math.PI/180) - ((g * x**2)/(2 * vel**2 * Math.cos(alpha*Math.PI/180)**2));
+      yDir.innerHTML = y.toFixed(2);
+      yarray.push(y)
+      //the time when y==0
+      endTime = ((2*vel*Math.sin(alpha*Math.PI/180))/g);
+      draw(x,y);
+
+      //check if time that the ball reaches to y==0 stop the timer and calculate accurate time and y Displacement
+      if(totalSeconds/10 >= endTime ){
+          console.log("endTime"+endTime/10);
+          x =  vel * Math.cos(alpha*Math.PI/180)*endTime;
+          xDir.innerHTML = x.toFixed(2);
+          y = x * Math.tan(alpha*Math.PI/180) - ((g * x**2)/(2 * vel**2 * Math.cos(alpha*Math.PI/180)**2));
+          yDir.innerHTML = Math.abs(y.toFixed(2));
+          console.log(x,y);
+          clearInterval(timer);
+          draw(x,y,10);
+      }
+      secondsLabel.innerHTML = timeLabel(totalSeconds);
+
+    return x,xarray, y, yarray, totalSeconds;
+  }
+
+}
+  //function to return time value
+    function timeLabel(val) {
+      var valString = val/10;
+        return valString;
+      }
+      //variables to change colors
+    var h=getRandomInt();
+    var g=getRandomInt();
+    var a=getRandomInt();
+      //ball and paths function
+    function draw(x=0,y=0,r=1){
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      ctx.beginPath();
+      ctx.arc(15+x, 450-y, r, 0, 2 * Math.PI);
+      h++;
+      g++;
+      a++;
+      if(a==255){
+        a=getRandomInt();
+      }
+      if(g==255){
+        g=getRandomInt();
+      }
+      if(h==255){
+        h=getRandomInt();
+      }
+      ctx.fillStyle = `rgb(${h},${a},${g})`;
+      ctx.fill();
+      ctx.strokeStyle ='black';
+      ctx.stroke();
+  }
+  //function to get random number
+  function getRandomInt(min=0, max=255) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+    }
+//set background function
+  function background(){
+      var c = document.getElementById("myCanvas");
+      var ctx = c.getContext("2d");
+      var my_gradient = ctx.createLinearGradient(0,0,0, 800);
+      my_gradient.addColorStop(0, "#45B649");
+      my_gradient.addColorStop(1,"#DCE35B");
+      ctx.fillStyle = my_gradient;
+      ctx.fillRect(0, 400, 800, 500);
+      var my_gradient2 = ctx.createLinearGradient(0,0,0, 800);
+      my_gradient2.addColorStop(0, "#6DD5FA");
+      my_gradient2.addColorStop(1,"#FFFFFF");
+
+      ctx.fillStyle = my_gradient2;
+      ctx.fillRect(0, 0, 800, 400);
+      ctx.beginPath();
+      ctx.arc(15, 450, 10, 0, 2 * Math.PI);
+      ctx.fillStyle = "black";
+      ctx.fill();
+      ctx.strokeStyle ='black';
+      ctx.stroke();
+}
+  //display background on load page
+  window.onload = function(){
+    background()
+  }
+  //reset function
+  function reset(){
+    //angle
+    document.getElementById('angle').value = "";
+    //Initial velocity
+    document.getElementById('initVel').value = "";
+    //x-dir
+    xDir.innerHTML=0;
+    //y-dir
+    yDir.innerHTML=0;
+    totalSeconds = 0;
+    secondsLabel.innerHTML = timeLabel(totalSeconds);
+    var c = document.getElementById("myCanvas");
+    var ctx = c.getContext("2d");
+    background();
+    }
+
+  </script>
+
+  </body>
+</html>
